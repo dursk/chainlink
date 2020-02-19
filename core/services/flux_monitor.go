@@ -427,7 +427,7 @@ func (p *PollingDeviationChecker) consume(ctx context.Context, roundSubscription
 }
 
 func (p *PollingDeviationChecker) roundOpen(client eth.Client) (bool, error) {
-	round, err := client.GetAggregatorRound(p.address)
+	latestRound, err := client.GetAggregatorRound(p.address)
 	if err != nil {
 		return false, err
 	}
@@ -436,7 +436,7 @@ func (p *PollingDeviationChecker) roundOpen(client eth.Client) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return lastRoundAnswered.Cmp(round) < 0, nil
+	return lastRoundAnswered.Cmp(latestRound) <= 0, nil
 }
 
 // Stop stops this instance from polling, cleaning up resources.
