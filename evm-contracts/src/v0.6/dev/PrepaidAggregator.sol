@@ -84,6 +84,7 @@ contract PrepaidAggregator is AggregatorInterface, Owned, WithdrawalInterface {
     uint32 indexed round,
     address indexed oracle
   );
+  event NewRound(uint256 indexed roundId, address indexed startedBy, uint256 startedAt);
 
   uint32 constant private ROUND_MAX = 2**32-1;
 
@@ -345,6 +346,28 @@ contract PrepaidAggregator is AggregatorInterface, Owned, WithdrawalInterface {
   }
 
   /**
+   * @notice get the start time of the current reporting round
+   */
+  function reportingRoundStartedAt()
+    external
+    view
+    returns (uint256)
+  {
+    return rounds[reportingRoundId].startedAt;
+  }
+
+  /**
+   * @notice get the start time of a round
+   */
+  function getStartedAt(uint256 _roundId)
+    external
+    view
+    returns (uint256)
+  {
+    return rounds[uint32(_roundId)].startedAt;
+  }
+
+  /**
    * @notice get the round ID that an answer was originally reported in
    * @param _roundId the round number to retrieve the answer for
    */
@@ -489,7 +512,7 @@ contract PrepaidAggregator is AggregatorInterface, Owned, WithdrawalInterface {
 
     oracles[msg.sender].lastStartedRound = _id;
 
-    emit NewRound(_id, msg.sender);
+    emit NewRound(_id, msg.sender, rounds[_id].startedAt);
   }
 
   function updateTimedOutRoundInfo(uint32 _id)
